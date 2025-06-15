@@ -1,18 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
-    <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Promptique</title>
-    
-  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="shortcut icon" href="/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="manifest" href="/site.webmanifest" />
-
-</head>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -98,6 +91,67 @@
             background: #fff;
             margin: 3px 0;
             transition: 0.3s;
+        }
+
+        /* Auth Buttons */
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .login-btn {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 400;
+            padding: 0.5rem 1rem;
+            transition: opacity 0.3s ease;
+            border-radius: 6px;
+        }
+
+        .login-btn:hover {
+            opacity: 0.6;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .signup-btn {
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            border: 2px solid #fff;
+        }
+
+        .signup-btn:hover {
+            background: transparent;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        /* Mobile Responsive for Auth Buttons */
+        @media (max-width: 768px) {
+            .auth-buttons {
+                display: none;
+            }
+            
+            /* Show auth buttons in mobile menu when implemented */
+            .mobile-nav-open .auth-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .mobile-nav-open .signup-btn,
+            .mobile-nav-open .login-btn {
+                text-align: center;
+                width: 100%;
+            }
         }
 
         /* Hero Section */
@@ -556,6 +610,18 @@
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(0, 0, 0, 0.98);
+                flex-direction: column;
+                padding: 2rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-links.active {
+                display: flex !important;
             }
 
             .mobile-menu {
@@ -633,6 +699,13 @@
                 <li><a href="#roi">ROI</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
+            
+            <!-- Auth Buttons -->
+            <div class="auth-buttons">
+                <a href="#" class="login-btn">Login</a>
+                <a href="#" class="signup-btn">Sign Up</a>
+            </div>
+            
             <div class="mobile-menu">
                 <span></span>
                 <span></span>
@@ -680,7 +753,7 @@
             <p class="section-subtitle fade-in">Three core pillars to transform your AI operations</p>
             
             <div class="services-grid">
-                <a href="/services/prompt-auditing" class="service-card-link">
+                <a href="#services" class="service-card-link">
                     <div class="service-card">
                         <div class="service-icon">🔍</div>
                         <h3>Prompt Auditing</h3>
@@ -689,7 +762,7 @@
                     </div>
                 </a>
                 
-                <a href="/services/token-optimization" class="service-card-link">
+                <a href="#services" class="service-card-link">
                     <div class="service-card">
                         <div class="service-icon">⚡</div>
                         <h3>Token Optimization</h3>
@@ -698,7 +771,7 @@
                     </div>
                 </a>
                 
-                <a href="/services/roi-intelligence" class="service-card-link">
+                <a href="#services" class="service-card-link">
                     <div class="service-card">
                         <div class="service-icon">📊</div>
                         <h3>ROI Intelligence</h3>
@@ -808,12 +881,11 @@
                 <div class="footer-section">
                     <h4>Contact</h4>
                     <a href="mailto:hello@peaas.ai">hello@peaas.ai</a>
-                    <a href="tel:+1234567890">+1 (234) 567-890</a>
                 </div>
                 
-                <div class="footer-section">
+              <div class="footer-section">
                     <h4>Follow Us</h4>
-                    <a href="#">LinkedIn</a>
+                    <a href="https://www.linkedin.com/company/promptique-ai/">LinkedIn</a>
                     <a href="#">Twitter</a>
                     <a href="#">GitHub</a>
                 </div>
@@ -900,11 +972,14 @@
             });
         });
 
-        // Mobile menu toggle (basic implementation)
+        // Mobile menu toggle (corrected version)
         document.querySelector('.mobile-menu').addEventListener('click', function() {
-            const navLinks = document.querySelector('.nav-links');
-            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
-        });
+          const nav = document.querySelector('nav');
+          const navLinks = document.querySelector('.nav-links');
+    
+    nav.classList.toggle('mobile-nav-open');
+    navLinks.classList.toggle('active');
+});
 
         // Add hover effects for service cards
         document.querySelectorAll('.service-card').forEach(card => {
@@ -920,6 +995,7 @@
                 }
             });
         });
+        
     </script>
 </body>
 </html>
