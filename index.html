@@ -13,7 +13,9 @@
     <meta name="description" content="Reduce prompt waste and maximize ChatGPT ROI. Start your free audit with Promptique – expert prompt engineering services for AI cost savings.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script async src="https://tally.so/widgets/embed.js"></script>
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"></script>
     <style>
+  
         * {
             margin: 0;
             padding: 0;
@@ -686,6 +688,91 @@
                 text-align: left;
             }
         }
+        /* User Menu Styles */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+.user-name {
+    color: #fff;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.logout-btn {
+    background: transparent;
+    color: #fff;
+    border: 1px solid #333;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 400;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: #333;
+    border-color: #555;
+}
+
+/* Update existing auth button styles to work with onclick */
+.login-btn, .signup-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.login-btn {
+    color: #fff;
+    font-weight: 400;
+    padding: 0.5rem 1rem;
+    transition: opacity 0.3s ease;
+    border-radius: 6px;
+}
+
+.login-btn:hover {
+    opacity: 0.6;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.signup-btn {
+    background: #fff;
+    color: #000;
+    font-weight: 500;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    border: 2px solid #fff;
+}
+
+.signup-btn:hover {
+    background: transparent;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* Mobile responsive for user menu */
+@media (max-width: 768px) {
+    .user-menu {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+    
+    .user-name {
+        font-size: 0.8rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -702,8 +789,8 @@
             
             <!-- Auth Buttons -->
             <div class="auth-buttons">
-                <a href="#" class="login-btn">Login</a>
-                <a href="#" class="signup-btn">Sign Up</a>
+                <button onclick="login()" class="login-btn">Login</button>
+                <button onclick="signup()" class="signup-btn">Sign Up</button>
             </div>
             
             <div class="mobile-menu">
@@ -997,5 +1084,114 @@
         });
         
     </script>
+    <script>
+// Auth0 Configuration - Replace with your actual values
+const AUTH0_CONFIG = {
+    domain: 'dev-dbx8wysxtvmti3hh.us.auth0.com',
+    clientId: 'japretYx7zGqtl0WzVlNEF9RN4BILrSY',
+    authorizationParams: {
+        redirect_uri: window.location.origin
+    }
+};
+
+let auth0Client = null;
+
+// Initialize Auth0
+async function initAuth0() {
+    try {
+        auth0Client = await auth0.createAuth0Client(AUTH0_CONFIG);
+        
+        // Check if user is authenticated
+        const isAuthenticated = await auth0Client.isAuthenticated();
+        
+        if (isAuthenticated) {
+            const user = await auth0Client.getUser();
+            updateUIForAuthenticatedUser(user);
+        } else {
+            updateUIForUnauthenticatedUser();
+        }
+        
+        // Handle callback from Auth0
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('code') && urlParams.has('state')) {
+            await auth0Client.handleRedirectCallback();
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            const user = await auth0Client.getUser();
+            updateUIForAuthenticatedUser(user);
+        }
+        
+    } catch (error) {
+        console.error('Auth0 initialization error:', error);
+    }
+}
+
+// Login function
+async function login() {
+    try {
+        await auth0Client.loginWithRedirect({
+            authorizationParams: {
+                screen_hint: 'login'
+            }
+        });
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('Login failed. Please try again.');
+    }
+}
+
+// Signup function
+async function signup() {
+    try {
+        await auth0Client.loginWithRedirect({
+            authorizationParams: {
+                screen_hint: 'signup'
+            }
+        });
+    } catch (error) {
+        console.error('Signup error:', error);
+        alert('Signup failed. Please try again.');
+    }
+}
+
+// Logout function
+async function logout() {
+    try {
+        await auth0Client.logout({
+            logoutParams: {
+                returnTo: window.location.origin
+            }
+        });
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
+}
+
+// Update UI for authenticated user
+function updateUIForAuthenticatedUser(user) {
+    const authButtons = document.querySelector('.auth-buttons');
+    authButtons.innerHTML = `
+        <div class="user-menu">
+            <img src="${user.picture}" alt="${user.name}" class="user-avatar">
+            <span class="user-name">${user.name}</span>
+            <button onclick="logout()" class="logout-btn">Logout</button>
+        </div>
+    `;
+}
+
+// Update UI for unauthenticated user
+function updateUIForUnauthenticatedUser() {
+    const authButtons = document.querySelector('.auth-buttons');
+    authButtons.innerHTML = `
+        <button onclick="login()" class="login-btn">Login</button>
+        <button onclick="signup()" class="signup-btn">Sign Up</button>
+    `;
+}
+
+// Initialize Auth0 when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initAuth0();
+});
+</script>
 </body>
 </html>
